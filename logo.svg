@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="AudiobookTools">
+  <title>AudiobookTools</title>
+  <style>
+    .bg { fill: #1d1c19; }
+    .wave { stroke: #c4746e; stroke-width: 3; stroke-linecap: round; fill: none; }
+    .text { fill: #c5c9c5; font-family: 'Iosevka', 'JetBrains Mono', 'Source Code Pro', ui-monospace, monospace; font-size: 22px; font-weight: 600; letter-spacing: 1px; }
+    .sub  { fill: #8a9a7b; font-family: 'Iosevka', 'JetBrains Mono', ui-monospace, monospace; font-size: 9px; letter-spacing: 2px; }
+  </style>
+  <rect class="bg" width="240" height="80"/>
+  <!-- soundwave glyph -->
+  <g transform="translate(12,40)">
+    <path class="wave" d="M0 0 L6 0"/>
+    <path class="wave" d="M12 -8 L12 8"/>
+    <path class="wave" d="M20 -14 L20 14"/>
+    <path class="wave" d="M28 -6 L28 6"/>
+    <path class="wave" d="M36 -18 L36 18"/>
+    <path class="wave" d="M44 -10 L44 10"/>
+    <path class="wave" d="M52 -4 L52 4"/>
+  </g>
+  <text class="text" x="78" y="46">AudiobookTools</text>
+  <text class="sub" x="78" y="62">RETAG · REORG · RESTORE</text>
+</svg>
