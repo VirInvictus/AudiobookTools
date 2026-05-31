@@ -156,6 +156,21 @@ The tool itself never deletes audio. The recipe:
    any remaining entries of the same series get re-routed at next
    `reorg --apply` — confirm with a dry run before applying.
 
+## Staging vs. Cold Storage (NAS) Sync
+
+If you maintain a fast local staging drive (e.g., `/mnt/SharedData`) and a cold storage NAS (e.g., `/mnt/Shared`), use the following workflow to safely promote new audiobooks:
+
+1. **Process Locally**: Do all your `retag` and `reorg` work on the staging drive first.
+   ```bash
+   audiobooktools retag --library /mnt/SharedData/Audiobooks --apply
+   audiobooktools reorg --library /mnt/SharedData/Audiobooks --apply
+   ```
+2. **Sync to NAS**: Once the files are successfully reorganized on the staging drive, sync them to the NAS.
+   ```bash
+   rsync -a --modify-window=1 /mnt/SharedData/Audiobooks/ /mnt/Shared/Audiobooks/
+   ```
+   *Note: CIFS/SMB network shares often truncate file timestamps to the nearest second. The `--modify-window=1` flag ensures `rsync` doesn't get confused by sub-second timestamp differences and mistakenly recopy identical files.*
+
 ## Troubleshooting
 
 ### `!! <book name>: no files matched`

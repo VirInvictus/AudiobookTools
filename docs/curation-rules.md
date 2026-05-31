@@ -127,6 +127,14 @@ as it grows:
   Maeve Gilmore) live under the main author's folder, co-author noted
   in the subtitle.
 
+## Single-File (M4B) vs. Multi-File (MP3) Layouts
+
+Where possible, a single `.m4b` file per audiobook is the preferred layout. It provides a cleaner directory structure, unified chapter metadata, and guaranteed correct playback order across all devices.
+
+However, massive multi-file collections (e.g., a 109-part `.mp3` layout for a book with a 160+ person cast) can be preserved as individual tracks if merging them via tools like `m4b-tool` risks dropping embedded per-track metadata or corrupting the files. 
+
+When preserving multi-file layouts, ensure the tracks are correctly zero-padded (e.g., `001 - Title.mp3` to `109 - Title.mp3`) so lexicographical sorting matches chronological playback.
+
 ## What gets culled
 
 In descending order of severity:
