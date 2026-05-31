@@ -305,6 +305,8 @@ def resolve_files(
             p = library_root / book["file"]
             if p.exists():
                 return [(p, {"title": tags["title"], "track": None, "disc": None})]
+            if base == p.parent:
+                return []
         files = _top_audio(base)
         if not files:
             return []

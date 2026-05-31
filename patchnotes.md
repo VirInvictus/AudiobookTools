@@ -1,5 +1,10 @@
 # Patch notes
 
+## v0.1.1 — 2026-05-30
+
+### Bug Fixes
+- **File Resolution Fallback:** Fixed a critical bug in `retag.py`'s `resolve_files`. Previously, if a `single` layout explicitly requested a file via the `file` attribute and that file was missing from its staging directory, the tool would fall back to `_top_audio` and incorrectly overwrite the tags of the first unrelated audio file it found. It now correctly returns an empty list and prints a missing file warning.
+
 ## v0.1.0 — 2026-05-28
 
 Initial release. Extracts and formalizes the toolset that previously lived
