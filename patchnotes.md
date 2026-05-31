@@ -1,5 +1,10 @@
 # Patch notes
 
+## v0.1.2 — 2026-05-30
+
+### Bug Fixes
+- **Standalone Book Promotion:** Fixed a bug in `retag.py`'s `resolve_files` where a book previously added as a standalone (and correctly reorganized to its standalone path) would not be found if it was later promoted to a series (by adding a second book to the series). Added a new probe to check the standalone alternate path if the file has not yet been moved to the series folder.
+
 ## v0.1.1 — 2026-05-30
 
 ### Bug Fixes

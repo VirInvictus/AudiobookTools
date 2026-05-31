@@ -279,6 +279,11 @@ def _book_root(book: dict, library_root: Path, counts: dict[str, int]) -> Path:
         if alt.exists() and any(alt.rglob("*")):
             return alt
 
+    # Probe 2.5: the standalone alternate.
+    standalone_alt = library_root / schema.sanitize(t["author"]) / schema.sanitize(t["album"])
+    if standalone_alt.exists() and any(standalone_alt.rglob("*")):
+        return standalone_alt
+
     # Probe 3: the catalog-provided staging path.
     if book["layout"] == "discs":
         return library_root / book["disc_root"]
