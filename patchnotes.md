@@ -1,5 +1,14 @@
 # Patch notes
 
+## v0.1.3 — 2026-05-30
+
+### Enhancements
+- **Typing and Linting:** Fixed mypy typing issues by ignoring missing stub imports in `pyproject.toml`. Code passes strict checks and is now fully formatted by Ruff.
+- **Documentation:** Added comprehensive docstrings to all functions in `cli.py`, `reorg.py`, `retag.py`, and `schema.py`.
+- **Robustness:** 
+  - `reorg.py`: Improved collision checks during planning (`_check`) to safely detect and block operations where a destination file already exists and isn't being natively renamed or moved away in topological order.
+  - `retag.py`: Improved `resolve_files` robustness around canonical vs staging paths.
+
 ## v0.1.2 — 2026-05-30
 
 ### Bug Fixes

@@ -95,6 +95,10 @@ def load_catalog(catalog_path: Path) -> tuple[list[dict], dict[str, str] | None]
 
 # ---- argument parser -------------------------------------------------------
 def _add_common_args(p: argparse.ArgumentParser) -> None:
+    """Add common arguments to the argument parser.
+
+    Adds the ``--library`` and ``--catalog`` arguments used by all subcommands.
+    """
     p.add_argument(
         "--library",
         type=Path,
@@ -110,6 +114,10 @@ def _add_common_args(p: argparse.ArgumentParser) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Construct the main argument parser for the CLI.
+
+    Configures the ``retag`` and ``reorg`` subcommands along with their options.
+    """
     ap = argparse.ArgumentParser(
         prog="audiobooktools",
         description="Tag and folder normalization for personal audiobook libraries.",
@@ -157,6 +165,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 # ---- main ------------------------------------------------------------------
 def _resolve_inputs(args: argparse.Namespace) -> tuple[Path, Path]:
+    """Resolve the library root and catalog path from CLI arguments.
+
+    Returns a tuple of ``(library_root, catalog_path)``, using the discovery
+    heuristics if either is not explicitly provided. Raises ``SystemExit`` on failure.
+    """
     catalog = args.catalog or discover_catalog()
     if catalog is None:
         raise SystemExit(
@@ -171,6 +184,11 @@ def _resolve_inputs(args: argparse.Namespace) -> tuple[Path, Path]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Entry point for the CLI.
+
+    Parses arguments, resolves the library and catalog, and delegates to the
+    appropriate subcommand (``retag`` or ``reorg``). Returns the exit code.
+    """
     args = build_parser().parse_args(argv)
 
     # restore / reverse short-circuit catalog discovery: they only need the

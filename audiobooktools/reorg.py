@@ -26,6 +26,7 @@ IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp"}
 
 # ---- enumeration -----------------------------------------------------------
 def source_root(book: dict, library_root: Path) -> Path:
+    """Return the root folder containing the source audio files for the given book."""
     if book["layout"] == "discs":
         return library_root / book["disc_root"]
     if "file" in book:
@@ -34,6 +35,10 @@ def source_root(book: dict, library_root: Path) -> Path:
 
 
 def audio_moves(book: dict, library_root: Path, counts: dict[str, int]) -> list[tuple[Path, Path]]:
+    """Calculate the source and destination paths for all audio files belonging to a book.
+
+    Skips any files that are already at their target destination.
+    """
     t = book["tags"]
     label = schema.sanitize(t["album"])
     layout = book["layout"]
@@ -145,25 +150,49 @@ def extra_moves(
 
 
 def all_moves(books: list[dict], library_root: Path) -> list[tuple[Path, Path]]:
+    """Gather all audio and extra file moves required for the entire catalog.
+
+    Filters out any in-place moves where the source and destination are identical.
+    """
     counts = schema.owned_counts(books)
-    moves = []
+    raw_moves = []
     for b in books:
-        moves += audio_moves(b, library_root, counts)
-    moves += extra_moves(books, library_root, counts)
+        raw_moves += audio_moves(b, library_root, counts)
+    raw_moves += extra_moves(books, library_root, counts)
+
+    moves = []
+    for src, dst in raw_moves:
+        if src.resolve() != dst.resolve():
+            moves.append((src, dst))
     return moves
 
 
 # ---- apply / reverse -------------------------------------------------------
 def _check(moves):
+    """Validate the planned file moves for missing sources or destination collisions.
+
+    Returns a list of error strings. Fails if a destination already exists and is
+    not being moved away, or if a destination would be overwritten without
+    topological sorting support.
+    """
     seen, problems = {}, []
+    move_srcs = {src.resolve() for src, _ in moves}
     for src, dst in moves:
         if not src.exists():
             problems.append(f"missing source: {src}")
-        if dst in seen:
-            problems.append(f"two sources map to {dst}:\n   {seen[dst]}\n   {src}")
-        seen[dst] = src
-        if dst.exists() and dst not in {d for _, d in moves}:
-            problems.append(f"destination exists: {dst}")
+
+        dst_res = dst.resolve() if dst.exists() else dst
+        if dst_res in seen:
+            problems.append(f"two sources map to {dst}:\n   {seen[dst_res]}\n   {src}")
+        seen[dst_res] = src
+
+        if dst.exists():
+            if dst.resolve() not in move_srcs:
+                problems.append(f"destination exists and is not being moved: {dst}")
+            else:
+                problems.append(
+                    f"destination exists and requires topological sort (unsupported): {dst}"
+                )
     return problems
 
 
@@ -189,12 +218,14 @@ def prune_empty_dirs(books: list[dict], library_root: Path) -> None:
 
 
 def default_manifest_path(library_root: Path) -> Path:
+    """Return the default path for the reorganization manifest file."""
     return library_root / ".audiobooktools" / "reorg-manifest.json"
 
 
 def do_apply(
     moves, books: list[dict], library_root: Path, manifest_path: Path | None = None
 ) -> None:
+    """Execute the planned moves and write a manifest of the changes."""
     manifest = []
     for src, dst in moves:
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -208,6 +239,7 @@ def do_apply(
 
 
 def do_reverse(manifest_path: Path) -> None:
+    """Reverse a previously executed reorganization using its manifest."""
     data = json.loads(Path(manifest_path).read_text())
     for entry in reversed(data):
         src, dst = Path(entry["src"]), Path(entry["dst"])
@@ -221,6 +253,7 @@ def do_reverse(manifest_path: Path) -> None:
 
 # ---- reporting -------------------------------------------------------------
 def print_dry_run(moves, library_root: Path) -> None:
+    """Print a dry-run summary of the planned moves grouped by destination directory."""
     by_dir = defaultdict(list)
     for src, dst in moves:
         by_dir[dst.parent.relative_to(library_root)].append((src, dst))
@@ -263,6 +296,7 @@ def run(
 
 # ---- legacy CLI entry (canonical CLI lives in audiobooktools.cli) ----------
 def main(argv: list[str] | None = None) -> int:
+    """Entry point for the legacy reorg CLI."""
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--library", required=True, type=Path)
     ap.add_argument("--catalog", required=True, type=Path)

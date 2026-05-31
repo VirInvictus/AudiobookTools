@@ -107,21 +107,25 @@ def natkey(p: Path) -> list:
 
 
 def leading_track_num(name: str) -> int | None:
+    """Extract the leading track number from a filename."""
     m = _LEADING_NUM.match(Path(name).stem)
     return int(m.group(1)) if m else None
 
 
 def disc_num_from_folder(name: str) -> int | None:
+    """Extract the disc number from a folder name."""
     m = re.search(r"(\d+)", name)
     return int(m.group(1)) if m else None
 
 
 def is_junk_comment(value: str) -> bool:
+    """Check if a comment string is junk metadata."""
     return bool(value) and bool(JUNK_COMMENT.match(value))
 
 
 # ---- MP4 read/write --------------------------------------------------------
 def _mp4_read(audio: MP4, key: str) -> str:
+    """Read a value from an MP4 audio tag."""
     if key not in audio:
         return ""
     val = audio[key]
@@ -136,6 +140,7 @@ def _mp4_read(audio: MP4, key: str) -> str:
 
 
 def _mp4_write(audio: MP4, key: str, value: str) -> None:
+    """Write a value to an MP4 audio tag."""
     if value == "":
         audio.pop(key, None)
         return
@@ -166,6 +171,7 @@ _TEXT = {
 
 
 def _mp3_read(id3: ID3, key: str) -> str:
+    """Read a value from an MP3 ID3 tag."""
     if key == "COMM":
         frames = id3.getall("COMM")
         return str(frames[0].text[0]) if frames and frames[0].text else ""
@@ -177,6 +183,7 @@ def _mp3_read(id3: ID3, key: str) -> str:
 
 
 def _mp3_write(id3: ID3, key: str, value: str) -> None:
+    """Write a value to an MP3 ID3 tag."""
     if key == "COMM":
         id3.delall("COMM")
         if value:
@@ -238,6 +245,7 @@ def desired_physical(
 
 # ---- file enumeration per layout -------------------------------------------
 def _top_audio(d: Path) -> list[Path]:
+    """Return all audio files in the top level of a directory."""
     return sorted(
         (p for p in d.iterdir() if p.is_file() and p.suffix.lower() in _AUDIO_EXT),
         key=natkey,
@@ -359,6 +367,7 @@ def resolve_files(
 
 # ---- diffing ---------------------------------------------------------------
 def open_audio(path: Path):
+    """Open an audio file and return the parsed metadata object and a boolean indicating if it is MP4."""
     is_mp4 = path.suffix.lower() in (".m4b", ".m4a", ".mp4")
     if is_mp4:
         audio = MP4(path)
@@ -373,6 +382,7 @@ def open_audio(path: Path):
 
 
 def file_diff(path: Path, overrides: dict, tags: dict, layout: str = ""):
+    """Compute the difference between current tags and desired tags for a file."""
     audio, is_mp4 = open_audio(path)
     read = _mp4_read if is_mp4 else _mp3_read
     narrator = tags["narrator"]
@@ -408,6 +418,7 @@ def file_diff(path: Path, overrides: dict, tags: dict, layout: str = ""):
 
 # ---- apply / restore -------------------------------------------------------
 def apply_file(audio, is_mp4: bool, desired: dict, path: Path | None = None) -> None:
+    """Apply desired tag changes to an audio file and save it."""
     write = _mp4_write if is_mp4 else _mp3_write
     for key, val in desired.items():
         write(audio, key, val)
@@ -454,6 +465,7 @@ _SNAPSHOT_KEYS_MP3 = [
 
 
 def snapshot(path: Path) -> dict:
+    """Take a snapshot of the current tags of an audio file for backup."""
     audio, is_mp4 = open_audio(path)
     read = _mp4_read if is_mp4 else _mp3_read
     keys = _SNAPSHOT_KEYS_MP4 if is_mp4 else _SNAPSHOT_KEYS_MP3
@@ -461,6 +473,7 @@ def snapshot(path: Path) -> dict:
 
 
 def restore(backup_path: Path, library_root: Path) -> None:
+    """Restore the tags of audio files from a backup snapshot."""
     data = json.loads(Path(backup_path).read_text())
     for rel, tagmap in data.items():
         path = library_root / rel
@@ -474,11 +487,13 @@ def restore(backup_path: Path, library_root: Path) -> None:
 
 # ---- reporting -------------------------------------------------------------
 def fmt(v: str, width: int = 60) -> str:
+    """Format a string for display in the dry-run report."""
     v = v.replace("\n", " ")
     return (v[:width] + "…") if len(v) > width else v
 
 
 def default_backup_path(library_root: Path) -> Path:
+    """Return the default path for the tag backup file."""
     return library_root / ".audiobooktools" / "backup.json"
 
 
@@ -571,6 +586,7 @@ def run(
 
 # ---- legacy CLI entry (canonical CLI lives in audiobooktools.cli) ----------
 def main(argv: list[str] | None = None) -> int:
+    """Legacy CLI entry point for the retag subcommand."""
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--library", required=True, type=Path, help="library root")
     ap.add_argument(
