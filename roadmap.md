@@ -15,6 +15,15 @@
       Studios m4bs onboarded from `Unfiltered/Red Rising Series Audible/`.
 - [x] Live library verified: `retag --apply` and `reorg --apply` both clean.
 
+## Maintenance (workspace sweep, 2026-06-09)
+
+- [ ] Restore the test environment: all three test modules import pytest,
+      but pytest is not installed in `.venv`, so the suite cannot run at
+      all. `uv add --dev pytest`, and pin it in `pyproject.toml`'s dev
+      group so this cannot silently regress.
+- [ ] Commit or revert the uncommitted changes to `catalog/books.py` and
+      `catalog/descriptions.py` (working tree dirty since ~1 Jun).
+
 ## Phase 2 — quality of life (planned)
 
 - [ ] `audiobooktools discover` — auto-scan a directory and emit catalog
