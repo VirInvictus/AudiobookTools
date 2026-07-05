@@ -148,6 +148,11 @@ def build_parser() -> argparse.ArgumentParser:
     g = reorg_p.add_mutually_exclusive_group()
     g.add_argument("--apply", action="store_true", help="execute the moves")
     g.add_argument(
+        "--diff",
+        action="store_true",
+        help="collapsed dry run: one line per destination directory",
+    )
+    g.add_argument(
         "--reverse",
         metavar="JSON",
         type=Path,
@@ -158,6 +163,23 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         help="manifest path (default: <library>/.audiobooktools/reorg-manifest.json)",
+    )
+
+    status_p = sub.add_parser("status", help="summarize the catalog against the library")
+    _add_common_args(status_p)
+
+    validate_p = sub.add_parser("validate", help="lint the catalog for drift")
+    _add_common_args(validate_p)
+
+    discover_p = sub.add_parser(
+        "discover", help="scan a directory and emit draft catalog entries from tags"
+    )
+    _add_common_args(discover_p)
+    discover_p.add_argument(
+        "--path",
+        type=Path,
+        default=None,
+        help="directory to scan (default: <library>/Unfiltered, else the library root)",
     )
 
     return ap
@@ -209,8 +231,11 @@ def main(argv: list[str] | None = None) -> int:
         do_reverse(args.reverse)
         return 0
 
+    if args.command == "discover":
+        return _run_discover(args)
+
     library, catalog = _resolve_inputs(args)
-    books, _desc = load_catalog(catalog)
+    books, desc = load_catalog(catalog)
 
     if args.command == "retag":
         from audiobooktools.retag import run as retag_run
@@ -226,9 +251,53 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "reorg":
         from audiobooktools.reorg import run as reorg_run
 
-        return reorg_run(library, books, apply=args.apply, manifest_path=args.manifest)
+        return reorg_run(
+            library, books, apply=args.apply, diff=args.diff, manifest_path=args.manifest
+        )
+
+    if args.command == "status":
+        from audiobooktools.report import status_report
+
+        return status_report(library, books)
+
+    if args.command == "validate":
+        from audiobooktools.report import validate_report
+
+        return validate_report(library, books, desc)
 
     raise SystemExit(f"unknown command: {args.command}")
+
+
+def _run_discover(args: argparse.Namespace) -> int:
+    """Resolve inputs for ``discover`` and run the scan.
+
+    ``discover`` needs only a library root; a catalog is optional and, when
+    present, lets it skip folders already accounted for. The scan directory
+    defaults to ``<library>/Unfiltered`` when that exists, else the library root.
+    """
+    from audiobooktools.discover import discover
+    from audiobooktools.report import resolved_paths
+
+    catalog = args.catalog or discover_catalog()
+    library = args.library or discover_library(catalog)
+    if library is None:
+        raise SystemExit("discover requires --library or an inferable library root")
+    library = library.resolve()
+
+    if args.path is not None:
+        scan_root = args.path.resolve()
+    else:
+        unfiltered = library / "Unfiltered"
+        scan_root = unfiltered if unfiltered.is_dir() else library
+    if not scan_root.is_dir():
+        raise SystemExit(f"discover: not a directory: {scan_root}")
+
+    known: set[Path] = set()
+    if catalog is not None:
+        books, _ = load_catalog(catalog.resolve())
+        known = {p.resolve() for p in resolved_paths(books, library)}
+
+    return discover(scan_root, library, known)
 
 
 if __name__ == "__main__":  # pragma: no cover

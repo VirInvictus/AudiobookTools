@@ -94,3 +94,19 @@ def test_check_passes_for_distinct_targets(tmp_path):
     src1.write_bytes(b"x")
     src2.write_bytes(b"y")
     assert reorg._check([(src1, dst1), (src2, dst2)]) == []
+
+
+def test_diff_summary_collapses_by_destination_dir(tmp_path, capsys):
+    """--diff collapses to one line per destination folder with a count, rather
+    than listing every file."""
+    moves = [
+        (tmp_path / "a.m4b", tmp_path / "Author" / "Series" / "1 - A" / "A.m4b"),
+        (tmp_path / "b.m4b", tmp_path / "Author" / "Series" / "1 - A" / "cover.jpg"),
+        (tmp_path / "c.m4b", tmp_path / "Author" / "Series" / "2 - B" / "B.m4b"),
+    ]
+    reorg.print_diff_summary(moves, tmp_path)
+    out = capsys.readouterr().out
+    lines = [ln for ln in out.splitlines() if ln.strip()]
+    assert len(lines) == 2  # two destination dirs, not three files
+    assert any("1 - A" in ln and ln.strip().startswith("2") for ln in lines)
+    assert any("2 - B" in ln and ln.strip().startswith("1") for ln in lines)

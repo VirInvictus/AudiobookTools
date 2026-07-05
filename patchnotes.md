@@ -1,5 +1,48 @@
 # Patch notes
 
+## v0.2.0 — 2026-07-05
+
+Phase 2 (quality of life). Three read-only introspection commands and a
+collapsed reorg view. Nothing here writes to the library; every new command is
+safe to run at any time.
+
+### New commands
+
+- **`status`** — one-screen summary of the catalog against a library: book
+  count and how many entries actually have files on disk, resolved file count
+  and total runtime (summed from decoded durations, with unreadable files
+  reported separately), catalogue entries not present on disk, audio files on
+  disk that no entry claims, and possible series-index gaps.
+- **`validate`** — lint pass over the catalog: missing covers, unused `DESC`
+  keys, duplicate `series_index` values, subtitle/index disagreements (decimal
+  `.5` indices compared numerically so they do not false-positive), empty or
+  junk narrator strings, and implausible `year` values. Exits non-zero when it
+  finds anything, so it can gate CI; a clean catalog exits 0.
+- **`discover`** — scans a directory (default `<library>/Unfiltered`) and
+  prints paste-ready draft entries pre-filled from each file's existing tags.
+  Layout is inferred from the folder shape; multi-file layouts are emitted with
+  a review marker. Dedups against a discoverable catalog, so it surfaces only
+  new books. This also covers the "catalog autocompletion" idea: point `--path`
+  at one new folder to draft that single entry.
+
+### Enhancements
+
+- **`reorg --diff`** — a collapsed dry run: one line per destination directory
+  with its file count, instead of enumerating every move.
+
+### Engine
+
+- New `audiobooktools.report` (status + validate, with the mechanical checks
+  factored into pure, unit-tested helpers) and `audiobooktools.discover` (tag
+  reading, layout inference, and draft rendering).
+- `reorg.run` gains a `diff` keyword; `reorg.print_diff_summary` is the
+  collapsed printer.
+
+### Tests
+
+- 26 new tests across `test_report.py`, `test_discover.py`, and a `--diff`
+  case in `test_reorg.py` (66 total, up from 40).
+
 ## v0.1.3 — 2026-05-30
 
 ### Enhancements

@@ -265,18 +265,29 @@ def print_dry_run(moves, library_root: Path) -> None:
             print(f"    {arrow}\n        → {dst.name}")
 
 
+def print_diff_summary(moves, library_root: Path) -> None:
+    """Print a collapsed dry run: one line per destination directory with its
+    file count, instead of enumerating every move."""
+    by_dir: dict[Path, int] = defaultdict(int)
+    for _src, dst in moves:
+        by_dir[dst.parent.relative_to(library_root)] += 1
+    for d in sorted(by_dir, key=str):
+        print(f"  {by_dir[d]:>4}  {d}{os.sep}")
+
+
 def run(
     library_root: Path,
     books: list[dict],
     *,
     apply: bool = False,
+    diff: bool = False,
     manifest_path: Path | None = None,
 ) -> int:
     """Plan or execute the reorganization pass.
 
-    When ``apply`` is False, prints a dry-run diff and returns 0 if the move
-    plan has no problems. When ``apply`` is True, executes the moves and
-    writes a reversible manifest.
+    When ``apply`` is False, prints a dry run (per-file, or a directory-collapsed
+    summary when ``diff`` is set) and returns 0 if the move plan has no problems.
+    When ``apply`` is True, executes the moves and writes a reversible manifest.
     """
     moves = all_moves(books, library_root)
     problems = _check(moves)
@@ -288,6 +299,12 @@ def run(
 
     if apply:
         do_apply(moves, books, library_root, manifest_path=manifest_path)
+    elif diff:
+        print_diff_summary(moves, library_root)
+        print(
+            f"\n{'=' * 60}\nDIFF: {len(moves)} files would move across "
+            f"{len({dst.parent for _s, dst in moves})} folder(s). --apply to execute."
+        )
     else:
         print_dry_run(moves, library_root)
         print(f"\n{'=' * 60}\nDRY RUN: {len(moves)} files would move. --apply to execute.")

@@ -72,6 +72,31 @@ abt retag --library /path/to/Audiobooks
 abt reorg --library /path/to/Audiobooks --apply
 ```
 
+## Inspecting the library (read-only)
+
+Three commands introspect the catalog and library without writing anything.
+
+```bash
+# Summary: books, on-disk vs. catalogued, total runtime, unmatched files,
+# catalogue entries not present on disk, and possible series-index gaps.
+abt status --library /path/to/Audiobooks
+
+# Lint the catalog: missing covers, unused DESC keys, duplicate/mismatched
+# series indices, junk narrators, implausible years. Exits non-zero on findings.
+abt validate --library /path/to/Audiobooks
+
+# Draft catalog entries for new books from their existing tags (scans
+# <library>/Unfiltered by default), ready to review and paste into books.py.
+abt discover --library /path/to/Audiobooks
+```
+
+A collapsed reorg preview (one line per destination directory instead of every
+file):
+
+```bash
+abt reorg --library /path/to/Audiobooks --diff
+```
+
 ## Conventional layout produced by `reorg`
 
 ```
@@ -140,7 +165,7 @@ narrator policy, etc).
 ## Project layout
 
 ```
-audiobooktools/    schema, retag engine, reorg engine, CLI
+audiobooktools/    schema, retag/reorg engines, report + discover, CLI
 catalog/           user data: BOOKS list + DESC descriptions
 docs/              workflows, curation rules
 tests/             pytest helpers + catalog smoke test

@@ -26,22 +26,25 @@
 - [x] Commit or revert the uncommitted changes to `catalog/books.py` and
       `catalog/descriptions.py` (committed; working tree clean).
 
-## Phase 2 — quality of life (planned)
+## Phase 2 — quality of life (v0.2.0)
 
-- [ ] `audiobooktools discover` — auto-scan a directory and emit catalog
+- [x] `audiobooktools discover` — auto-scan a directory and emit catalog
       entries from existing tags. Speeds up adding a batch of books from
-      `Unfiltered/`.
-- [ ] `audiobooktools validate` — lint pass: warn on missing covers, unused
-      DESC keys, mismatched series counts, suspicious narrator strings,
+      `Unfiltered/`. Infers layout from folder shape; dedups against a
+      discoverable catalog so it only surfaces new books.
+- [x] `audiobooktools validate` — lint pass: missing covers, unused DESC
+      keys, duplicate/mismatched series indices, suspicious narrator strings,
       `year` values that look like publication years rather than audio
-      editions.
-- [ ] `audiobooktools status` — short summary: total books, total hours
-      (from m4b duration), unowned-series gaps, files that don't match any
-      catalog entry.
-- [ ] `--diff` mode that shows what `reorg` would change without enumerating
-      every file (collapsed by destination directory).
-- [ ] Catalog autocompletion: when adding an entry, read the source m4b's
-      existing tags and propose a draft dict.
+      editions. Exits non-zero on findings (CI-usable).
+- [x] `audiobooktools status` — short summary: total books, on-disk vs.
+      catalogued count, total runtime (from decoded durations), catalogue
+      entries not present on disk, files that match no catalog entry, and
+      possible series-index gaps.
+- [x] `--diff` mode that shows what `reorg` would change without enumerating
+      every file (one line per destination directory).
+- [x] Catalog autocompletion: read the source file's existing tags and
+      propose a draft entry. Folded into `discover` (point `--path` at a
+      single new folder to draft that one entry).
 
 ## Phase 3 — packaging / distribution (planned)
 

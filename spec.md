@@ -179,6 +179,56 @@ Both files are JSON for human inspection; both default to under
 `<library>/.audiobooktools/` so the library directory carries its own
 history.
 
+## Read-only commands
+
+Three commands introspect the catalog and library without ever writing to
+either. They have no `--apply`; running them is always safe.
+
+### `status`
+
+A one-screen summary of the catalog against a library:
+
+- book count, and how many of those entries actually have files on disk;
+- resolved file count and total runtime (summed from each file's decoded
+  duration; unreadable files are counted separately, not silently dropped);
+- **not on disk** — catalog entries that resolve to no files (in the catalog
+  but not present in this library);
+- **unmatched on disk** — audio files present in the library that no catalog
+  entry claims (dot-directories such as `.audiobooktools/` are skipped);
+- **possible series gaps** — series whose owned whole-number indices have an
+  internal gap (owning 1, 2, 4). Sub-1 novella indices and an end-of-run
+  cutoff (owning 1-4 of a longer series) are deliberately not gaps. Purely
+  informational.
+
+### `validate`
+
+A lint pass over the catalog. Exits non-zero when it finds anything (so it
+can gate CI); a clean catalog exits 0. Checks:
+
+- missing cover image in a book's on-disk folder;
+- unused `DESC` keys (a synopsis attached to no owned entry);
+- duplicate `series_index` within a series;
+- subtitle/index disagreement (`"Book Two"` with `series_index` `"3"`);
+  decimal indices (`"Book 12.5"` with `"12.5"`) are compared numerically and
+  do not false-positive;
+- empty or junk-looking narrator strings (`narrator: None`, meaning
+  "preserve", is intentional and never flagged);
+- `year` values that are not a plausible 4-digit audio-edition year
+  (outside 1980 .. next year), which usually means a publication year slipped
+  in. See [`docs/curation-rules.md`](docs/curation-rules.md).
+
+### `discover`
+
+Scans a directory (default `<library>/Unfiltered`, else the library root) and
+prints draft catalog entries pre-filled from each file's existing tags, ready
+to review and paste into `catalog/books.py`. Layout is inferred from the
+folder shape: one top-level audio file is `single` (emitted as a `single(...)`
+call), several is `chapters` (emitted as a full dict with a review marker,
+since parts-vs-chapters cannot be told from disk alone), and `Disc N`
+subfolders are `discs`. When a catalog is discoverable, folders whose audio is
+already catalogued are skipped, so `discover` shows only what is new. `--path`
+overrides the scan directory.
+
 ## What the tool will not do
 
 - **Delete audio files.** `reorg` moves and renames; it never `rm`s an
