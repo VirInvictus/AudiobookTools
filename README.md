@@ -1,5 +1,7 @@
 # AudiobookTools
 
+[![CI](https://github.com/VirInvictus/AudiobookTools/actions/workflows/ci.yml/badge.svg)](https://github.com/VirInvictus/AudiobookTools/actions/workflows/ci.yml)
+
 Declarative tag normalization and Audiobookshelf-friendly folder reorganization
 for personal audiobook libraries. One source of truth (your catalog file)
 drives both the embedded tags on the audio files and the on-disk folder tree,
