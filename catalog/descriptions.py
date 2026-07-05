@@ -12,6 +12,8 @@ PACEY = "Steven Pacey"
 
 LINCOLN_CAST = "Nick Offerman, David Sedaris, George Saunders, Carrie Brownstein, Miranda July, Lena Dunham & a full cast"
 
+GRAVEYARD_CAST = "Neil Gaiman, Derek Jacobi, Robert Madge, Clare Corbett, Miriam Margolyes, Andrew Scott & Julian Rhind-Tutt"
+
 DESC: dict[str, str] = {
     "bc1": (
         "Some say the world has ended. The Black Company, last of the Free "
@@ -163,6 +165,14 @@ DESC: dict[str, str] = {
         "with their sights set on the Sinspire, the world's most exclusive and "
         "most heavily guarded gambling house, where cheating means death."
     ),
+    "graveyard_book": (
+        "Nobody Owens, known to his friends as Bod, is a normal boy, except that "
+        "he has been raised since infancy by the ghosts of a sprawling, ancient "
+        "graveyard. Bod has the freedom of the cemetery and the company of its "
+        "dead, but the man named Jack, who murdered the rest of Bod's family, is "
+        "still hunting the world of the living for the child who escaped him. This "
+        "full-cast production gives each ghost and guardian its own voice."
+    ),
     "hyperion": (
         "On the eve of an interstellar war, seven pilgrims journey across the "
         "planet Hyperion to seek a final audience with the Shrike, a being of "
@@ -170,6 +180,16 @@ DESC: dict[str, str] = {
         "through their tales the strange ecology of the Hegemony of Man, the Time "
         "Tombs, and the deep history of the human web begins to unfold. Simmons's "
         "masterwork is a Canterbury Tales for a far-future humanity."
+    ),
+    "jonathan_strange": (
+        "In an England where magic was once real but has dwindled to dry "
+        "scholarship, the reclusive Mr Norrell of Hurtfew Abbey astonishes the "
+        "nation by performing feats of true magic. He soon takes an apt pupil, "
+        "the dashing and reckless Jonathan Strange, and together they are drawn "
+        "into the Napoleonic Wars and the service of the government. But the two "
+        "magicians grow estranged, and a bargain Norrell once struck with a "
+        "dangerous gentleman with thistle-down hair begins to unravel around them "
+        "all."
     ),
     "just_kids": (
         "It was the summer Coltrane died, the summer of love and riots, and the "
@@ -200,6 +220,22 @@ DESC: dict[str, str] = {
         "and art unfinished by a Master and his devoted Margarita. Bulgakov's "
         "masterpiece, written in secret under Stalin, is a comic, terrifying, and "
         "exhilarating novel of love and faith."
+    ),
+    "name_of_the_wind": (
+        "The intimate first day of Kvothe's story, told in his own voice to a "
+        "chronicler who has tracked him to the remote inn where he hides under "
+        "another name. The orphaned son of traveling players, Kvothe recounts his "
+        "childhood on the road, his hard years scraping to survive on the streets "
+        "of Tarbean, and his arrival at the University, where he hunts for the "
+        "truth behind the Chandrian who destroyed everything he loved."
+    ),
+    "wise_mans_fear": (
+        "Kvothe's story continues into its second day. Driven from the University "
+        "for a time, he journeys to the court of a powerful nobleman, falls in "
+        "with mercenaries and the Fae, and trains among the legendary warriors of "
+        "the Adem. All the while he edges closer to the Chandrian, the figures "
+        "whose names are half-forgotten and wholly feared, and to the woman who "
+        "fascinates and eludes him."
     ),
     "red_country": (
         "They burned her home, they stole her brother and sister, but vengeance "

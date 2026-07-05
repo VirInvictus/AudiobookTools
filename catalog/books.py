@@ -9,7 +9,7 @@ written as full dicts.
 from __future__ import annotations
 
 from audiobooktools.schema import GENRE, single
-from catalog.descriptions import ABERCROMBIE, DESC, LINCOLN_CAST, PACEY
+from catalog.descriptions import ABERCROMBIE, DESC, GRAVEYARD_CAST, LINCOLN_CAST, PACEY
 
 BOOKS: list[dict] = [
     single(
@@ -1332,6 +1332,74 @@ BOOKS: list[dict] = [
             "series": "",
             "series_index": "",
             "description": None,
+        },
+    },
+    {
+        "name": "The Name of the Wind",
+        "layout": "chapters",
+        "glob": "Unfiltered/Patrick Rothfuss - The Kingkiller Chronicle/The Kingkiller Chronicle 01 - The Name of the Wind/*.mp3",
+        "tags": {
+            "title": None,
+            "subtitle": "The Kingkiller Chronicle: Day One",
+            "author": "Patrick Rothfuss",
+            "narrator": "Nick Podehl",
+            "album": "The Name of the Wind",
+            "genre": GENRE,
+            "year": "2009",
+            "series": "The Kingkiller Chronicle",
+            "series_index": "1",
+            "description": DESC["name_of_the_wind"],
+        },
+    },
+    {
+        "name": "The Wise Man's Fear",
+        "layout": "chapters",
+        "glob": "Unfiltered/Patrick Rothfuss - The Kingkiller Chronicle/Patrick Rothfuss - The Kingkiller Chronicle 02 - The Wise Man's Fear/*.mp3",
+        "tags": {
+            "title": None,
+            "subtitle": "The Kingkiller Chronicle: Day Two",
+            "author": "Patrick Rothfuss",
+            "narrator": "Nick Podehl",
+            "album": "The Wise Man's Fear",
+            "genre": GENRE,
+            "year": "2011",
+            "series": "The Kingkiller Chronicle",
+            "series_index": "2",
+            "description": DESC["wise_mans_fear"],
+        },
+    },
+    {
+        "name": "Jonathan Strange & Mr Norrell",
+        "layout": "parts",
+        "glob": "Unfiltered/Susanna Clarke - Jonathan Strange & Mr Norrell - mp3/*.mp3",
+        "tags": {
+            "title": "Jonathan Strange & Mr Norrell",
+            "subtitle": "",
+            "author": "Susanna Clarke",
+            "narrator": "Simon Prebble",
+            "album": "Jonathan Strange & Mr Norrell",
+            "genre": GENRE,
+            "year": "2004",
+            "series": "",
+            "series_index": "",
+            "description": DESC["jonathan_strange"],
+        },
+    },
+    {
+        "name": "The Graveyard Book: Full-Cast Production",
+        "layout": "parts",
+        "glob": "Unfiltered/The Graveyard Book Full-Cast Production/*.m4b",
+        "tags": {
+            "title": "The Graveyard Book: Full-Cast Production",
+            "subtitle": "",
+            "author": "Neil Gaiman",
+            "narrator": GRAVEYARD_CAST,
+            "album": "The Graveyard Book: Full-Cast Production",
+            "genre": GENRE,
+            "year": "2014",
+            "series": "",
+            "series_index": "",
+            "description": DESC["graveyard_book"],
         },
     },
 ]
