@@ -17,12 +17,14 @@
 
 ## Maintenance (workspace sweep, 2026-06-09)
 
-- [ ] Restore the test environment: all three test modules import pytest,
-      but pytest is not installed in `.venv`, so the suite cannot run at
-      all. `uv add --dev pytest`, and pin it in `pyproject.toml`'s dev
-      group so this cannot silently regress.
-- [ ] Commit or revert the uncommitted changes to `catalog/books.py` and
-      `catalog/descriptions.py` (working tree dirty since ~1 Jun).
+- [x] Restore the test environment. Dev deps (`pytest`, `ruff`) moved from
+      `[project.optional-dependencies]` to a PEP 735 `[dependency-groups]`
+      block so a plain `uv sync` installs them by default; that closes the
+      regression at its root (the old extra had to be requested explicitly,
+      so a fresh `.venv` came up without pytest). Suite runs green (40
+      passed) and is pinned in `pyproject.toml` + `uv.lock`.
+- [x] Commit or revert the uncommitted changes to `catalog/books.py` and
+      `catalog/descriptions.py` (committed; working tree clean).
 
 ## Phase 2 — quality of life (planned)
 
