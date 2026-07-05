@@ -45,6 +45,11 @@ pattern = "^(?P<version>[^\\s]+)"
 [tool.hatch.build.targets.wheel]
 packages = ["audiobooktools"]
 
+[tool.hatch.build.targets.sdist]
+# Ship the engine and its docs, never the author's personal catalog data.
+# The catalog is user data that ships separately (see roadmap Phase 3).
+exclude = ["catalog"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"

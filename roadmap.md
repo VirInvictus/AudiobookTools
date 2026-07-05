@@ -46,14 +46,21 @@
       propose a draft entry. Folded into `discover` (point `--path` at a
       single new folder to draft that one entry).
 
-## Phase 3 — packaging / distribution (planned)
+## Phase 3 — packaging / distribution
 
-- [ ] Publish to PyPI. Ship without a bundled catalog (the data ships
-      separately).
-- [ ] Provide a `cookiecutter`-style template for a fresh `catalog/`
-      directory.
-- [ ] CI: GitHub Actions runs ruff + pytest on every push and tag.
-- [ ] Release notes automated from `patchnotes.md` via a small script.
+- [~] Publish to PyPI. Packaging is ready: the wheel is engine-only and the
+      sdist excludes `catalog/`, so the author's data never ships (verified in
+      CI). A dormant `publish.yml` builds, cuts a GitHub Release from the
+      changelog, and publishes via PyPI trusted publishing on a `vX.Y.Z` tag.
+      **Remaining:** configure the trusted publisher on PyPI, then push the
+      first tag. Nothing publishes until then.
+- [x] Provide a `cookiecutter`-style template for a fresh `catalog/`
+      directory (`catalog-template/`: minimal `books.py` + `descriptions.py`
+      + README, copyable to `catalog/`).
+- [x] CI: GitHub Actions runs ruff (lint + format check) + pytest on Python
+      3.10–3.13 on every push and PR, plus a build-and-verify job.
+- [x] Release notes automated from `patchnotes.md` via a small script
+      (`scripts/release_notes.py`), wired into `publish.yml`.
 
 ## Phase 4 — integrations (speculative)
 

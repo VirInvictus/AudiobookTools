@@ -40,8 +40,23 @@ safe to run at any time.
 
 ### Tests
 
-- 26 new tests across `test_report.py`, `test_discover.py`, and a `--diff`
-  case in `test_reorg.py` (66 total, up from 40).
+- New tests across `test_report.py`, `test_discover.py`, `test_release_notes.py`,
+  and a `--diff` case in `test_reorg.py` (71 total, up from 40).
+
+### Tooling and packaging
+
+- **CI.** GitHub Actions runs ruff (lint + format check) and pytest on Python
+  3.10–3.13 for every push and PR, plus a build job that fails if the author's
+  `catalog/` ever leaks into a distribution.
+- **Distribution hygiene.** The wheel is engine-only and the sdist now excludes
+  `catalog/`, so personal library data never ships. Verified against a real
+  `uv build`.
+- **Release automation.** `scripts/release_notes.py` extracts a version's
+  section from this changelog; a dormant `publish.yml` uses it to cut a GitHub
+  Release and publish to PyPI (trusted publishing) when a `vX.Y.Z` tag is
+  pushed. Inert until a PyPI trusted publisher is configured.
+- **Catalog template.** `catalog-template/` is a minimal, copyable starting
+  point for a fresh `catalog/`.
 
 ## v0.1.3 — 2026-05-30
 

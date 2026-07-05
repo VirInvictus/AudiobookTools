@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Sync dependencies
+        run: uv sync --python ${{ matrix.python-version }}
+
+      - name: Ruff lint
+        run: uv run --python ${{ matrix.python-version }} ruff check .
+
+      - name: Ruff format check
+        run: uv run --python ${{ matrix.python-version }} ruff format --check .
+
+      - name: Pytest
+        run: uv run --python ${{ matrix.python-version }} pytest -q
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build sdist and wheel
+        run: uv build
+
+      - name: Verify the personal catalog is not packaged
+        run: |
+          python3 - <<'PY'
+          import glob, tarfile, zipfile, sys
+          sdist = sorted(glob.glob("dist/*.tar.gz"))[-1]
+          wheel = sorted(glob.glob("dist/*.whl"))[-1]
+          leaked = [n for n in tarfile.open(sdist).getnames() if "/catalog/" in n]
+          leaked += [n for n in zipfile.ZipFile(wheel).namelist() if n.startswith("catalog/")]
+          if leaked:
+              print("catalog data leaked into a distribution:", leaked)
+              sys.exit(1)
+          print("ok: no catalog data in sdist or wheel")
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*

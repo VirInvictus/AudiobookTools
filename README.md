@@ -148,6 +148,9 @@ BOOKS = [
 ]
 ```
 
+Starting fresh? Copy [`catalog-template/`](catalog-template/) to `catalog/`
+next to your library and replace the example entries with your own.
+
 See [`docs/curation-rules.md`](docs/curation-rules.md) for the editorial
 conventions the shipped catalog follows (year = recording year, high-marks
 narrator policy, etc).
