@@ -51,6 +51,10 @@ safe to run at any time.
 - **Distribution hygiene.** The wheel is engine-only and the sdist now excludes
   `catalog/`, so personal library data never ships. Verified against a real
   `uv build`.
+- **Runtime version source.** `audiobooktools.__version__` resolves from
+  installed-package metadata first (`importlib.metadata`) and falls back to the
+  repo's `VERSION` file, so wheel installs report the real version instead of
+  `0.0.0+unknown` (the `VERSION` file does not ship in the wheel).
 - **Release automation.** `scripts/release_notes.py` extracts a version's
   section from this changelog; a dormant `publish.yml` uses it to cut a GitHub
   Release and publish to PyPI (trusted publishing) when a `vX.Y.Z` tag is
